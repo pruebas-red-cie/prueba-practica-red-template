@@ -1,0 +1,142 @@
+name: 🧪 Verificación de Ejercicios
+
+on:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  verificar-python:
+    name: 🐍 Verificar Python
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: 📦 Instalar pytest
+        run: pip install pytest
+      
+      - name: 🧪 Ejecutar tests de Python
+        id: pytest
+        run: pytest tests/test_python.py -v --tb=short
+        continue-on-error: true
+      
+      - name: 📊 Generar resumen de Python
+        if: always()
+        run: |
+          if [ "${{ steps.pytest.outcome }}" == "success" ]; then
+            echo "## 🐍 Python - ✅ APROBADO" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "¡Excelente! Todos los tests de Python pasaron correctamente." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 🐍 Python - ❌ PENDIENTE" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Los tests de Python no pasaron. Revisa la salida del paso anterior para ver los errores." >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: ❌ Fallar si los tests no pasaron
+        if: steps.pytest.outcome != 'success'
+        run: exit 1
+
+  verificar-javascript:
+    name: 📦 Verificar JavaScript
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+      
+      - name: 📦 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: 📦 Instalar Jest
+        run: npm install --save-dev jest
+      
+      - name: 🧪 Ejecutar tests de JavaScript
+        id: jest
+        run: npx jest tests/test_javascript.test.js --verbose
+        continue-on-error: true
+      
+      - name: 📊 Generar resumen de JavaScript
+        if: always()
+        run: |
+          if [ "${{ steps.jest.outcome }}" == "success" ]; then
+            echo "## 📦 JavaScript - ✅ APROBADO" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "¡Excelente! Todos los tests de JavaScript pasaron correctamente." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 📦 JavaScript - ❌ PENDIENTE" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Los tests de JavaScript no pasaron. Revisa la salida del paso anterior para ver los errores." >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: ❌ Fallar si los tests no pasaron
+        if: steps.jest.outcome != 'success'
+        run: exit 1
+
+  resultado-final:
+    name: 📋 Resultado Final
+    runs-on: ubuntu-latest
+    needs: [verificar-python, verificar-javascript]
+    if: always()
+    
+    steps:
+      - name: 📊 Generar resumen final
+        run: |
+          echo "# 🎯 Resultado de la Prueba de Familiarización" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          PYTHON_STATUS="${{ needs.verificar-python.result }}"
+          JS_STATUS="${{ needs.verificar-javascript.result }}"
+          
+          echo "## 📊 Resumen de Ejercicios" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Ejercicio | Estado |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$PYTHON_STATUS" == "success" ]; then
+            echo "| 🐍 Python | ✅ Aprobado |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| 🐍 Python | ❌ Pendiente |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "$JS_STATUS" == "success" ]; then
+            echo "| 📦 JavaScript | ✅ Aprobado |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| 📦 JavaScript | ❌ Pendiente |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$PYTHON_STATUS" == "success" ] && [ "$JS_STATUS" == "success" ]; then
+            echo "## 🎉 ¡Felicidades!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Has completado exitosamente la prueba de familiarización." >> $GITHUB_STEP_SUMMARY
+            echo "Ya conoces el flujo de trabajo para la prueba técnica real." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## 💪 ¡Sigue intentando!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Aún hay ejercicios pendientes. Revisa los errores y vuelve a hacer push." >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📝 Recordatorios para la Prueba Real" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- ⏰ **Tiempo límite:** 90 minutos" >> $GITHUB_STEP_SUMMARY
+          echo "- 💻 **Tipo:** Fullstack (Python/JavaScript + frameworks)" >> $GITHUB_STEP_SUMMARY
+          echo "- 💯 **Puntaje máximo:** 100 puntos" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔄 **Intentos:** Solo uno" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**¡Buena suerte en tu prueba! 🚀**" >> $GITHUB_STEP_SUMMARY
