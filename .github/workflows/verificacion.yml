@@ -13,40 +13,34 @@ jobs:
       - name: 📥 Checkout del código
         uses: actions/checkout@v4
       
-      - name: 🐍 Configurar Python 3.11
+      - name: 🐍 Configurar Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'
       
       - name: 📦 Instalar pytest
         run: pip install pytest
       
       - name: 🧪 Ejecutar tests de Python
         id: pytest
-        run: |
-          pytest tests/test_python.py -v --tb=short 2>&1 | tee pytest_output.txt
-          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        run: pytest tests/test_python.py -v --tb=short
         continue-on-error: true
       
       - name: 📊 Generar resumen de Python
+        if: always()
         run: |
-          if [ "${{ steps.pytest.outputs.exit_code }}" == "0" ]; then
+          if [ "${{ steps.pytest.outcome }}" == "success" ]; then
             echo "## 🐍 Python - ✅ APROBADO" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "¡Excelente! Todos los tests de Python pasaron correctamente." >> $GITHUB_STEP_SUMMARY
           else
             echo "## 🐍 Python - ❌ PENDIENTE" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Los tests de Python no pasaron. Revisa los errores arriba." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Detalle de errores:" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat pytest_output.txt >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "Los tests de Python no pasaron. Revisa la salida del paso anterior para ver los errores." >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: ❌ Fallar si los tests no pasaron
-        if: steps.pytest.outputs.exit_code != '0'
+        if: steps.pytest.outcome != 'success'
         run: exit 1
 
   verificar-javascript:
@@ -57,40 +51,34 @@ jobs:
       - name: 📥 Checkout del código
         uses: actions/checkout@v4
       
-      - name: 📦 Configurar Node.js 20
+      - name: 📦 Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '18'
       
       - name: 📦 Instalar Jest
         run: npm install --save-dev jest
       
       - name: 🧪 Ejecutar tests de JavaScript
         id: jest
-        run: |
-          npx jest tests/test_javascript.test.js --verbose 2>&1 | tee jest_output.txt
-          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+        run: npx jest tests/test_javascript.test.js --verbose
         continue-on-error: true
       
       - name: 📊 Generar resumen de JavaScript
+        if: always()
         run: |
-          if [ "${{ steps.jest.outputs.exit_code }}" == "0" ]; then
+          if [ "${{ steps.jest.outcome }}" == "success" ]; then
             echo "## 📦 JavaScript - ✅ APROBADO" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "¡Excelente! Todos los tests de JavaScript pasaron correctamente." >> $GITHUB_STEP_SUMMARY
           else
             echo "## 📦 JavaScript - ❌ PENDIENTE" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Los tests de JavaScript no pasaron. Revisa los errores arriba." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Detalle de errores:" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat jest_output.txt >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "Los tests de JavaScript no pasaron. Revisa la salida del paso anterior para ver los errores." >> $GITHUB_STEP_SUMMARY
           fi
       
       - name: ❌ Fallar si los tests no pasaron
-        if: steps.jest.outputs.exit_code != '0'
+        if: steps.jest.outcome != 'success'
         run: exit 1
 
   resultado-final:
