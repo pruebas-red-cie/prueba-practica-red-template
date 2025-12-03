@@ -224,7 +224,7 @@ Si llegaste hasta aquí y tus tests pasan, ¡felicidades! Ya estás preparado/a 
 
 **Recuerda para la prueba real:**
 - ⏰ Tendrás exactamente **90 minutos**
-- 💯 La prueba vale **100 puntos**
+- 💯 La prueba vale **130 puntos**
 - 🔄 Solo tienes **un intento**
 - 📝 Lee bien cada ejercicio antes de empezar a programar
 - 💾 Haz commits frecuentes para no perder tu progreso
