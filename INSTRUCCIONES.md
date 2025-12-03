@@ -12,7 +12,7 @@ Después de aceptar el assignment, GitHub creará una copia del repositorio para
 
 ```bash
 # Copia la URL de tu repositorio desde GitHub (botón verde "Code")
-git clone https://github.com/<TU-USUARIO>/<TU-REPOSITORIO>.git
+git clone https://github.com/pruebas-red-cie/<TU-REPOSITORIO>.git
 
 # Entra a la carpeta del proyecto
 cd <TU-REPOSITORIO>
