@@ -51,9 +51,7 @@ Para una guía detallada paso a paso, consulta el archivo **[INSTRUCCIONES.md](I
 Si tienes problemas técnicos durante esta práctica o la prueba real, puedes:
 
 - Revisar las [Preguntas Frecuentes en INSTRUCCIONES.md](INSTRUCCIONES.md#-preguntas-frecuentes)
-- Contactar al equipo técnico en el canal de Discord del programa RED
-- Enviar un correo a soporte@programared.cl
-
+- Consultar en la reunión presencial de práctica el viernes a las 10.00
 ---
 
 **¡Buena suerte con tu práctica! 🚀**
